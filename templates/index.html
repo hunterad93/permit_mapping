@@ -8,11 +8,12 @@
     <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 </head>
 <body>
-    <div id="map" style="height: 600px;"></div>
-    <div id="sidebar" style="position: fixed; right: 0; top: 0; width: 30%; height: 100%; overflow: auto; background: #fff; z-index: 1000;">
-        <!-- Data will be inserted here -->
+    <div id="banner">
+        <input id="search-input" type="text" placeholder="Search...">
+        <button id="search-button">Search</button>
     </div>
-    <input type="text" id="search-input" placeholder="Search location...">
-    <button id="search-button">Search</button>
+    <div id="map" style="height: 600px;"></div>
+    <div id="sidebar"></div>        <!-- Data will be inserted here -->
+    </div>
     <script src="{{ url_for('static', filename='js/map.js') }}"></script></body>
 </html>

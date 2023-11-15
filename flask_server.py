@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 @app.route('/data')
 def data():
-    df = pd.read_csv('../data/geocoded_addresses.csv')
+    df = pd.read_csv('data/geocoded_addresses.csv')
     df = df[df['lat'].notnull() & df['lon'].notnull()]
     gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.lon, df.lat))
     return json.dumps(json.loads(gdf.to_json()), ignore_nan=True)

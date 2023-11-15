@@ -1,5 +1,6 @@
 // Initialize map and markers
-var map = initializeMap('map', [0, 0], 2);
+// Initialize map at coordinates 46.8721° N, 113.9940° W with a zoom level of 12
+var map = initializeMap('map', [46.8721, -113.9940], 12);
 var markers = createMarkerClusterGroup();
 var searchResults = createMarkerClusterGroup();
 
@@ -32,6 +33,7 @@ function createMarkerClusterGroup() {
             });
         },
         spiderfyOnMaxZoom: false,  // Disable spiderfying on max zoom
+        showCoverageOnHover: false, //Disable the blue polygons
         removeOutsideVisibleBounds: false,  // Keep all markers in the cluster group
         animate: false,  // Disable animation
         maxClusterRadius: 120,  // Increase the maximum radius that a cluster will cover (default is 80)
@@ -126,6 +128,17 @@ function addClusterClickListener(markerGroup) {
     });
 }
 
+function displayPropertiesInSidebar(properties) {
+    var table = '<table>';
+    for (var key in properties) {
+        table += `<tr><td>${key}</td><td>${properties[key]}</td></tr>`;
+    }
+    table += '</table>';
+    var sidebar = document.getElementById('sidebar');
+    sidebar.innerHTML = table;
+    sidebar.style.width = '300px';  // Expand the sidebar
+}
+
 function displayClusterPropertiesInSidebar(markers) {
     var table = '<table>';
     markers.forEach(marker => {
@@ -135,5 +148,7 @@ function displayClusterPropertiesInSidebar(markers) {
         }
     });
     table += '</table>';
-    document.getElementById('sidebar').innerHTML = table;
+    var sidebar = document.getElementById('sidebar');
+    sidebar.innerHTML = table;
+    sidebar.style.width = '300px';  // Expand the sidebar
 }

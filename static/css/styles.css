@@ -6,3 +6,50 @@
     text-align: center;
     line-height: 40px;
 }
+
+#banner {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    padding: 0 10px;
+    z-index: 1000;
+}
+
+#search-input {
+    flex-grow: 1;
+    margin-right: 10px;
+    padding: 5px;
+    border: none;
+    border-radius: 3px;
+}
+
+#search-button {
+    padding: 5px 10px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+#search-button:hover {
+    background-color: #45a049;
+}
+
+#sidebar {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 0; /* Collapsed by default */
+    overflow: hidden; /* Hide the content when the sidebar is collapsed */
+    background-color: rgba(255, 255, 255, 0.7);
+    transition: width 0.4s ease-in-out; /* Smooth transition */
+    z-index: 1000;
+}
