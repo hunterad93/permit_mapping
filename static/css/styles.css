@@ -1,3 +1,8 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
 .marker-cluster {
     background-color: rgba(0, 0, 0, 0.5);
     border: 2px solid #fff;
@@ -7,18 +12,51 @@
     line-height: 40px;
 }
 
-#banner {
-    position: absolute;
-    bottom: 0;
+#search-banner {
+    position: fixed;
+    top: 60px; /* Adjusted to make room for #date-banner */
     left: 0;
-    right: 0;
     height: 50px;
+    width: 33.33%;
     display: flex;
     align-items: center;
     background-color: rgba(255, 255, 255, 0.7);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     padding: 0 10px;
-    z-index: 1000;
+    z-index: 2;
+    max-width: 33.33%;
+    transition: width 0.5s ease-in-out;
+}
+
+#date-banner {
+    position: fixed;
+    top: 0; /* Positioned at the top */
+    left: 0; /* Left aligned */
+    width: 33.33%;
+    height: 50px;
+    background-color: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    padding: 0 10px;
+    z-index: 2;
+    text-align: center;
+    line-height: 50px;
+    max-width: 33.33%;
+    transition: width 0.5s ease-in-out;
+}
+
+
+#map {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    padding: 0;
+    z-index: 1;
+    overflow: hidden;
+    background: #808080;
 }
 
 #search-input {
@@ -27,29 +65,30 @@
     padding: 5px;
     border: none;
     border-radius: 3px;
+    width:33.33%;
 }
 
 #search-button {
     padding: 5px 10px;
     border: none;
-    background-color: #4CAF50;
+    background-color: rgba(76, 247, 224);
     color: white;
     cursor: pointer;
     border-radius: 3px;
 }
 
 #search-button:hover {
-    background-color: #45a049;
+    background-color: rgba(76, 247, 224, 0.7);
 }
 
 #sidebar {
-    position: absolute;
-    right: 0;
+    position: fixed;
     top: 0;
-    bottom: 0;
+    right: 0; /* Position on the right */
     width: 0; /* Collapsed by default */
-    overflow: hidden; /* Hide the content when the sidebar is collapsed */
-    background-color: rgba(255, 255, 255, 0.7);
+    height: 100%; /* Full height */
+    overflow-y: auto; /* Add scroll if necessary */
+    background-color: rgba(76, 247, 224, 0.7);
     transition: width 0.4s ease-in-out; /* Smooth transition */
-    z-index: 1000;
+    z-index: 2;
 }

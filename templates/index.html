@@ -8,12 +8,25 @@
     <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 </head>
 <body>
-    <div id="banner">
-        <input id="search-input" type="text" placeholder="Search...">
+    <div id="search-banner">
+        <select id="property-select">
+            <option value="street1">Street 1</option>
+            <option value="street2">Street 2</option>
+            <!-- Add more options as needed -->
+        </select>
+        <input type="text" id="search-input">
         <button id="search-button">Search</button>
     </div>
-    <div id="map" style="height: 600px;"></div>
-    <div id="sidebar"></div>        <!-- Data will be inserted here -->
+    <div id="date-banner">
+        <label for="start-date">Start date:</label>
+        <input type="date" id="start-date">
+        <label for="end-date">End date:</label>
+        <input type="date" id="end-date">
+        <button id="filter-button">Filter</button>
     </div>
-    <script src="{{ url_for('static', filename='js/map.js') }}"></script></body>
+    <!-- Add more banners as needed -->
+    <div id="map"></div>
+    <div id="sidebar"></div> <!-- Data will be inserted here -->
+    <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+</body>
 </html>
