@@ -12,38 +12,49 @@ html, body {
     line-height: 40px;
 }
 
-#search-banner {
+#search-banner, #date-banner {
     position: fixed;
-    top: 60px; /* Adjusted to make room for #date-banner */
     left: 0;
-    height: 50px;
     width: 33.33%;
+    max-width: 33.33%;
     display: flex;
     align-items: center;
     background-color: rgba(255, 255, 255, 0.7);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     padding: 0 10px;
     z-index: 2;
-    max-width: 33.33%;
-    transition: width 0.5s ease-in-out;
+    overflow: hidden;
+    transition: max-width 0.5s ease-in-out;
+}
+
+#search-banner {
+    top: 60px;
+    height: 50px;
 }
 
 #date-banner {
-    position: fixed;
-    top: 0; /* Positioned at the top */
-    left: 0; /* Left aligned */
-    width: 33.33%;
+    top: 0;
     height: 50px;
-    background-color: rgba(255, 255, 255, 0.7);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    padding: 0 10px;
-    z-index: 2;
     text-align: center;
     line-height: 50px;
-    max-width: 33.33%;
-    transition: width 0.5s ease-in-out;
 }
 
+/* Define the collapsed state of the banners */
+#search-banner.collapsed, #date-banner.collapsed {
+    max-width: 0;
+}
+
+/* Style the collapse button */
+.collapse-button {
+    position: absolute; /* Position the button absolutely within the banner */
+    right: 10px; /* Position the button 10px from the right edge of the banner */
+    /* Add your styles for the button */
+}
+
+/* Style the collapse button when the banner is collapsed */
+#search-banner.collapsed .collapse-button, #date-banner.collapsed .collapse-button {
+    /* Add your styles for the button in the collapsed state */
+}
 
 #map {
     height: 100%;
@@ -61,7 +72,7 @@ html, body {
 
 #search-input {
     flex-grow: 1;
-    margin-right: 10px;
+    margin-right: 20px;
     padding: 5px;
     border: none;
     border-radius: 3px;
@@ -70,6 +81,7 @@ html, body {
 
 #search-button {
     padding: 5px 10px;
+    margin-left:auto;
     border: none;
     background-color: rgba(76, 247, 224);
     color: white;

@@ -2,26 +2,28 @@
 const SIDEBAR_WIDTH = '300px';
 const TILE_LAYER_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
+
+//Creating the map
 function initializeMap(mapId, coordinates, zoomLevel) {
-    var southWest = L.latLng(46.6, -113.0),
+    let southWest = L.latLng(46.6, -113.0), //guessed an approximate perim
     northEast = L.latLng(47.2, -115.0),
     bounds = L.latLngBounds(southWest, northEast);
-    var map = L.map(mapId, {
+    let map = L.map(mapId, { //prevent crazy zoom out or in
         maxZoom: 19,
-        minZoom: 10,
+        minZoom: 8,
         zoomControl: false
     }).setView(coordinates, zoomLevel);
     map.setMaxBounds(bounds);
     L.tileLayer(TILE_LAYER_URL,{
         bounds:bounds,
         maxZoom: 19,
-        minZoom: 10
+        minZoom: 8
     }).addTo(map);
     return map;
 }
 
 // Sidebar object
-var Sidebar = {
+let Sidebar = {
     element: document.getElementById('sidebar'),
 
     show: function() {
@@ -33,41 +35,40 @@ var Sidebar = {
     },
 
     displayProperties: function(propertiesArray) {
-        var content = `<strong><p>${propertiesArray.length} permit(s) at this location</p></strong><table>`;
+        let $table = $('<table>');
         propertiesArray.forEach(properties => {
-            for (var key in properties) {
-                content += `<tr><td><strong>${key}:</strong></td><td>${properties[key]}</td></tr>`;
+            for (let key in properties) {
+                $table.append(`<tr><td><strong>${key}:</strong></td><td>${properties[key]}</td></tr>`);
             }
-            content += '<tr><td colspan="2"><hr></td></tr>'; // Horizontal line to separate different properties
+            $table.append('<tr><td colspan="2"><hr></td></tr>'); // Horizontal line to separate different properties
         });
-        content += '</table>';
-        this.element.innerHTML = content;
+        $(this.element).html(`<strong><p>${propertiesArray.length} permit(s) at this location</p></strong>`).append($table);
         this.show();
     }
 };
 
 // Add event listener to stop propagation of click event in the sidebar
-Sidebar.element.addEventListener('click', function(event) {
+$('#sidebar').click(function(event) {
     event.stopPropagation();
 });
 
 // Add event listener to hide the sidebar when clicking outside of it
-document.addEventListener('click', function() {
+$(document).click(function() {
     Sidebar.hide();
 });
 
 // Initialize map and markers
-var map = initializeMap('map', [46.8721, -113.9940], 14);
+let map = initializeMap('map', [46.8721, -113.9940], 14);
 
 
-var markers = createMarkerClusterGroup();
-var searchResults = createMarkerClusterGroup();
+let markers = createMarkerClusterGroup();
+let searchResults = createMarkerClusterGroup();
 
 // Fetch initial data and add to map
 fetchDataAndAddToMap('/data', markers);
 
 // Add event listener for search button
-document.getElementById('search-button').addEventListener('click', function() {
+$('#search-button').click(function() {
     searchLocations(markers, searchResults);
 });
 
@@ -97,14 +98,12 @@ function createMarkerClusterGroup() {
         });
 }
 
-function fetchDataAndAddToMap(url, markerGroup) {
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            var geoJsonLayer = createGeoJsonLayer(data);
-            markerGroup.addLayer(geoJsonLayer);
-            map.addLayer(markerGroup);
-        });
+async function fetchDataAndAddToMap(url, markerGroup) {
+    const response = await fetch(url);
+    const data = await response.json();
+    const geoJsonLayer = createGeoJsonLayer(data);
+    markerGroup.addLayer(geoJsonLayer);
+    map.addLayer(markerGroup);
 }
 
 function createGeoJsonLayer(data) {
@@ -116,7 +115,7 @@ function createGeoJsonLayer(data) {
 }
 
 function createMarker(feature, latlng) {
-    var marker = L.marker(latlng);
+    let marker = L.marker(latlng);
     marker.on('click', function(event) {
         event.originalEvent.stopPropagation();
         displayPropertiesInSidebar(feature.properties);
@@ -126,8 +125,8 @@ function createMarker(feature, latlng) {
 
 function searchLocations(markers, searchResults) {
     // Get the selected property and the search term
-    var property = document.getElementById('property-select').value;
-    var searchTerm = document.getElementById('search-input').value.toLowerCase();
+    let property = document.getElementById('property-select').value;
+    let searchTerm = document.getElementById('search-input').value.toLowerCase();
 
     // If the search term is empty, show the original markers layer
     if (searchTerm === '') {
@@ -142,15 +141,15 @@ function searchLocations(markers, searchResults) {
     }
 
     // Get all markers
-    var allMarkers = markers.getLayers();
+    let allMarkers = markers.getLayers();
 
     // Clear the current markers from the search results
     searchResults.clearLayers();
 
     // Loop through markers
-    for (var i = 0; i < allMarkers.length; i++) {
+    for (let i = 0; i < allMarkers.length; i++) {
         // If marker's selected property contains the search term, add to results
-        var propValue = allMarkers[i].feature.properties[property];
+        let propValue = allMarkers[i].feature.properties[property];
         
         if (propValue && propValue.toLowerCase().includes(searchTerm)) {
             searchResults.addLayer(allMarkers[i]);  // Add the marker to the search results
@@ -183,14 +182,13 @@ function displayPropertiesInSidebar(properties) {
 }
 
 function displayClusterPropertiesInSidebar(markers) {
-    var propertiesArray = markers.map(marker => marker.feature.properties);
+    let propertiesArray = markers.map(marker => marker.feature.properties);
     Sidebar.displayProperties(propertiesArray);
 }
 
-var toggleButtons = document.querySelectorAll('.toggle-button');
-for (var i = 0; i < toggleButtons.length; i++) {
-    toggleButtons[i].addEventListener('click', function() {
-        var target = document.getElementById(this.dataset.target);
-        target.classList.toggle('open');
-    });
-}
+// In your jQuery, add an event listener to each button
+$('.collapse-button').click(function() {
+    let $this = $(this);
+    $this.parent().toggleClass('collapsed');
+    $this.text($this.parent().hasClass('collapsed') ? '+' : '-'); // Change the button's text based on the collapsed state
+});
