@@ -12,50 +12,6 @@ html, body {
     line-height: 40px;
 }
 
-#search-banner, #date-banner {
-    position: fixed;
-    left: 0;
-    width: 33.33%;
-    max-width: 33.33%;
-    display: flex;
-    align-items: center;
-    background-color: rgba(255, 255, 255, 0.7);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    padding: 0 10px;
-    z-index: 2;
-    overflow: hidden;
-    transition: max-width 0.5s ease-in-out;
-}
-
-#search-banner {
-    top: 60px;
-    height: 50px;
-}
-
-#date-banner {
-    top: 0;
-    height: 50px;
-    text-align: center;
-    line-height: 50px;
-}
-
-/* Define the collapsed state of the banners */
-#search-banner.collapsed, #date-banner.collapsed {
-    max-width: 0;
-}
-
-/* Style the collapse button */
-.collapse-button {
-    position: absolute; /* Position the button absolutely within the banner */
-    right: 10px; /* Position the button 10px from the right edge of the banner */
-    /* Add your styles for the button */
-}
-
-/* Style the collapse button when the banner is collapsed */
-#search-banner.collapsed .collapse-button, #date-banner.collapsed .collapse-button {
-    /* Add your styles for the button in the collapsed state */
-}
-
 #map {
     height: 100%;
     width: 100%;
@@ -72,16 +28,17 @@ html, body {
 
 #search-input {
     flex-grow: 1;
-    margin-right: 20px;
+    margin-right: 0px;
     padding: 5px;
     border: none;
     border-radius: 3px;
-    width:33.33%;
+    width:70.33%;
 }
 
 #search-button {
-    padding: 5px 10px;
-    margin-left:auto;
+    padding: 5px 0px;
+    margin-right:10px;
+    width:20%;
     border: none;
     background-color: rgba(76, 247, 224);
     color: white;
@@ -93,7 +50,7 @@ html, body {
     background-color: rgba(76, 247, 224, 0.7);
 }
 
-#sidebar {
+#right-sidebar {
     position: fixed;
     top: 0;
     right: 0; /* Position on the right */
@@ -103,4 +60,16 @@ html, body {
     background-color: rgba(76, 247, 224, 0.7);
     transition: width 0.4s ease-in-out; /* Smooth transition */
     z-index: 2;
+}
+
+#left-sidebar {
+    position: fixed; /* Fixed position */
+    top: 0; /* Position at the top */
+    left: 0; /* Position on the left */
+    width: 250px; /* Width of the sidebar */
+    height: 100%; /* Full height */
+    overflow-y: auto; /* Add scroll if necessary */
+    background-color: #333; /* Background color */
+    transition: width 0.4s ease-in-out; /* Smooth transition */
+    z-index: 2; /* Stay on top */
 }

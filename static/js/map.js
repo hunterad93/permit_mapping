@@ -22,9 +22,9 @@ function initializeMap(mapId, coordinates, zoomLevel) {
     return map;
 }
 
-// Sidebar object
-let Sidebar = {
-    element: document.getElementById('sidebar'),
+// right sidebar object
+let rightSidebar = {
+    element: document.getElementById('right-sidebar'),
 
     show: function() {
         this.element.style.width = SIDEBAR_WIDTH;
@@ -48,13 +48,13 @@ let Sidebar = {
 };
 
 // Add event listener to stop propagation of click event in the sidebar
-$('#sidebar').click(function(event) {
+$('#right-sidebar').click(function(event) {
     event.stopPropagation();
 });
 
 // Add event listener to hide the sidebar when clicking outside of it
 $(document).click(function() {
-    Sidebar.hide();
+    rightSidebar.hide();
 });
 
 // Initialize map and markers
@@ -94,11 +94,14 @@ function createMarkerClusterGroup() {
         animate: false,  // Disable animation
         maxClusterRadius: 120,  // Increase the maximum radius that a cluster will cover (default is 80)
         chunkedLoading: true,  // Enable chunked loading to improve performance
-        chunkInterval: 100  // Control how long each chunk operation can run for (in milliseconds)
+        chunkInterval: 10  // Control how long each chunk operation can run for (in milliseconds)
         });
 }
 
 async function fetchDataAndAddToMap(url, markerGroup) {
+    // Clear the existing markers
+    markerGroup.clearLayers();
+
     const response = await fetch(url);
     const data = await response.json();
     const geoJsonLayer = createGeoJsonLayer(data);
@@ -125,7 +128,6 @@ function createMarker(feature, latlng) {
 
 function searchLocations(markers, searchResults) {
     // Get the selected property and the search term
-    let property = document.getElementById('property-select').value;
     let searchTerm = document.getElementById('search-input').value.toLowerCase();
 
     // If the search term is empty, show the original markers layer
@@ -149,7 +151,7 @@ function searchLocations(markers, searchResults) {
     // Loop through markers
     for (let i = 0; i < allMarkers.length; i++) {
         // If marker's selected property contains the search term, add to results
-        let propValue = allMarkers[i].feature.properties[property];
+        let propValue = allMarkers[i].feature.properties['street1'];
         
         if (propValue && propValue.toLowerCase().includes(searchTerm)) {
             searchResults.addLayer(allMarkers[i]);  // Add the marker to the search results
@@ -178,17 +180,23 @@ function addClusterClickListener(markerGroup) {
 }
 
 function displayPropertiesInSidebar(properties) {
-    Sidebar.displayProperties([properties]);
+    rightSidebar.displayProperties([properties]);
 }
 
 function displayClusterPropertiesInSidebar(markers) {
     let propertiesArray = markers.map(marker => marker.feature.properties);
-    Sidebar.displayProperties(propertiesArray);
+    rightSidebar.displayProperties(propertiesArray);
 }
 
-// In your jQuery, add an event listener to each button
-$('.collapse-button').click(function() {
-    let $this = $(this);
-    $this.parent().toggleClass('collapsed');
-    $this.text($this.parent().hasClass('collapsed') ? '+' : '-'); // Change the button's text based on the collapsed state
+$('#type-filter').change(function() {
+    let selectedType = $(this).val();
+    fetchDataAndAddToMap(`/data?type=${selectedType}`, markers);
+});
+
+$('#date-filter-button').click(function() {
+    let startDate = $('#start-date').val();
+    let endDate = $('#end-date').val();
+
+    // Fetch data based on the selected dates
+    fetchDataAndAddToMap(`/data?start=${startDate}&end=${endDate}`, markers);
 });
