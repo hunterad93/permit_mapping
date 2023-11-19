@@ -2,7 +2,6 @@
 const SIDEBAR_WIDTH = '300px';
 const TILE_LAYER_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
-
 //Creating the map
 function initializeMap(mapId, coordinates, zoomLevel) {
     let southWest = L.latLng(46.6, -113.0), //guessed an approximate perim
@@ -53,6 +52,21 @@ let rightSidebar = {
     }
 };
 
+// Permit Filters button object
+let permitFiltersButton = {
+    element: document.getElementById('permit-filters-button'),
+
+    show: function() {
+        this.element.style.width = '200px';
+        this.element.style.zIndex = '2'; // Set z-index to 2 when shown
+    },
+
+    hide: function() {
+        this.element.style.width = '0';
+        this.element.style.zIndex = '0'; // Set z-index to 0 when hidden
+    }
+};
+
 // left sidebar object
 let leftSidebar = {
     element: document.getElementById('left-sidebar'),
@@ -68,6 +82,12 @@ let leftSidebar = {
 
 $('#left-sidebar-close').on('click', function() {
     leftSidebar.hide();
+    permitFiltersButton.show(); // Show permit filters button when sidebar is closed
+});
+
+$('#permit-filters-button').on('click', function() {
+    leftSidebar.show();
+    permitFiltersButton.hide(); // Hide permit filters button when it is clicked
 });
 
 // Add event listener to stop propagation of click event in the sidebar
@@ -175,8 +195,9 @@ function getFilters() {
     let searchTerm = $('#search-input').val().toLowerCase();
     let startDate = $('#start-date').val();
     let endDate = $('#end-date').val();
+    let recentData = $('#recent-data').is(':checked') ? 'recent' : 'all';
 
-    return `?type=${selectedType}&search=${searchTerm}&start=${startDate}&end=${endDate}`;
+    return `?type=${selectedType}&search=${searchTerm}&start=${startDate}&end=${endDate}&data=${recentData}`;
 }
 
 $('#type-filter').change(function() {
@@ -184,5 +205,9 @@ $('#type-filter').change(function() {
 });
 
 $('#search-button, #date-filter-button').click(function() {
+    fetchDataAndAddToMap(`/data${getFilters()}`, markers);
+});
+
+$('#recent-data').change(function() {
     fetchDataAndAddToMap(`/data${getFilters()}`, markers);
 });

@@ -9,7 +9,7 @@ app = Flask(__name__)
 def load_data():
     df = pd.read_csv('data/geocoded_addresses.csv')
     df = df[df['lat'].notnull() & df['lon'].notnull()]
-    df['date'] = pd.to_datetime(df['date'])
+    df['datetime'] = pd.to_datetime(df['date'])
     return df
 
 df = load_data()
@@ -29,13 +29,13 @@ def data():
     if start_date and end_date:
         start_date = pd.to_datetime(start_date)
         end_date = pd.to_datetime(end_date)
-        data = data[(data['date'] >= start_date) & (data['date'] <= end_date)]
-    # Convert date to string format for JSON serialization
-    data['date'] = data['date'].astype(str)
+        data = data[(data['datetime'] >= start_date) & (data['datetime'] <= end_date)]
     # Filter the data based on the search term
     search_term = request.args.get('search')
     if search_term and search_term != '':
         data = data[data['street1'].str.contains(search_term, case=False, na=False)]
+    # Drop the datetime column as per instructions
+    data = data.drop(columns=['datetime'])
     # Convert the data to GeoJSON
     gdf = gpd.GeoDataFrame(data, geometry=gpd.points_from_xy(data.lon, data.lat))
     print(start_date)
