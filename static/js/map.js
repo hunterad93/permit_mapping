@@ -62,19 +62,12 @@ let map = initializeMap('map', [46.8721, -113.9940], 14);
 
 
 let markers = createMarkerClusterGroup();
-let searchResults = createMarkerClusterGroup();
 
 // Fetch initial data and add to map
 fetchDataAndAddToMap('/data', markers);
 
-// Add event listener for search button
-$('#search-button').click(function() {
-    searchLocations(markers, searchResults);
-});
-
 // Add event listeners for cluster clicks
 addClusterClickListener(markers);
-addClusterClickListener(searchResults);
 
 
 
@@ -126,50 +119,6 @@ function createMarker(feature, latlng) {
     return marker;
 }
 
-function searchLocations(markers, searchResults) {
-    // Get the selected property and the search term
-    let searchTerm = document.getElementById('search-input').value.toLowerCase();
-
-    // If the search term is empty, show the original markers layer
-    if (searchTerm === '') {
-        // Remove the search results from the map
-        map.removeLayer(searchResults);
-
-        // Add the original markers to the map
-        map.addLayer(markers);
-
-        // Exit the function
-        return;
-    }
-
-    // Get all markers
-    let allMarkers = markers.getLayers();
-
-    // Clear the current markers from the search results
-    searchResults.clearLayers();
-
-    // Loop through markers
-    for (let i = 0; i < allMarkers.length; i++) {
-        // If marker's selected property contains the search term, add to results
-        let propValue = allMarkers[i].feature.properties['street1'];
-        
-        if (propValue && propValue.toLowerCase().includes(searchTerm)) {
-            searchResults.addLayer(allMarkers[i]);  // Add the marker to the search results
-        }
-    }
-
-    // Clear the current markers from the map
-    map.removeLayer(markers);
-
-    // Add the search results to the map
-    map.addLayer(searchResults);
-
-    // If there are any results, move to the location of the first result and zoom in
-    if (searchResults.getLayers().length > 0) {
-        map.setView(searchResults.getLayers()[0].getLatLng(), 12);
-    }
-}
-
 function addClusterClickListener(markerGroup) {
     markerGroup.on('clusterclick', function (a) {
         a.originalEvent.stopPropagation();
@@ -188,15 +137,19 @@ function displayClusterPropertiesInSidebar(markers) {
     rightSidebar.displayProperties(propertiesArray);
 }
 
-$('#type-filter').change(function() {
-    let selectedType = $(this).val();
-    fetchDataAndAddToMap(`/data?type=${selectedType}`, markers);
-});
-
-$('#date-filter-button').click(function() {
+function getFilters() {
+    let selectedType = $('#type-filter').val();
+    let searchTerm = $('#search-input').val().toLowerCase();
     let startDate = $('#start-date').val();
     let endDate = $('#end-date').val();
 
-    // Fetch data based on the selected dates
-    fetchDataAndAddToMap(`/data?start=${startDate}&end=${endDate}`, markers);
+    return `?type=${selectedType}&search=${searchTerm}&start=${startDate}&end=${endDate}`;
+}
+
+$('#type-filter').change(function() {
+    fetchDataAndAddToMap(`/data${getFilters()}`, markers);
+});
+
+$('#search-button, #date-filter-button').click(function() {
+    fetchDataAndAddToMap(`/data${getFilters()}`, markers);
 });
