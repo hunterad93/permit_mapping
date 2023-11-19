@@ -10,9 +10,12 @@
 </head>
 <body>
     <div id="left-sidebar">
+        <button id="left-sidebar-close">X</button>
         <h2>Filter Options</h2>
+        <h4>Search</h4>
         <input id="search-input"> <!-- Search input -->
         <button id="search-button">Search</button> <!-- Search button -->
+        <h4>Affiliate Type</h4>
         <select id="type-filter">
             <option value="">All</option>
             <option value="student">student</option>
@@ -20,6 +23,7 @@
             <!-- Add more options as needed -->
         </select>
         <br>
+        <h4>Select Date Range</h4>
         <input type="date" id="start-date">
         <input type="date" id="end-date">
         <button id="date-filter-button">Filter</button>

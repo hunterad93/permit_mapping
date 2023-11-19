@@ -33,19 +33,42 @@ let rightSidebar = {
     hide: function() {
         this.element.style.width = '0';
     },
-
     displayProperties: function(propertiesArray) {
-        let $table = $('<table>');
+        let rows = '';
         propertiesArray.forEach(properties => {
             for (let key in properties) {
-                $table.append(`<tr><td><strong>${key}:</strong></td><td>${properties[key]}</td></tr>`);
+                let value = properties[key];
+                // Check if the key is 'url'
+                if (key === 'url') {
+                    // If it's 'url', create a hyperlink
+                    value = `<a href="${value}" target="_blank">link</a>`;
+                }
+                rows += `<tr><td><strong>${key}:</strong></td><td>${value}</td></tr>`;
             }
-            $table.append('<tr><td colspan="2"><hr></td></tr>'); // Horizontal line to separate different properties
+            rows += '<tr><td colspan="2"><hr></td></tr>'; // Horizontal line to separate different properties
         });
+        let $table = $(`<table>${rows}</table>`);
         $(this.element).html(`<strong><p>${propertiesArray.length} permit(s) at this location</p></strong>`).append($table);
         this.show();
     }
 };
+
+// left sidebar object
+let leftSidebar = {
+    element: document.getElementById('left-sidebar'),
+
+    show: function() {
+        this.element.style.width = SIDEBAR_WIDTH;
+    },
+
+    hide: function() {
+        this.element.style.width = '0';
+    }
+};
+
+$('#left-sidebar-close').on('click', function() {
+    leftSidebar.hide();
+});
 
 // Add event listener to stop propagation of click event in the sidebar
 $('#right-sidebar').click(function(event) {
@@ -75,10 +98,18 @@ function createMarkerClusterGroup() {
     return L.markerClusterGroup({
 
         iconCreateFunction: function(cluster) {
+            let className = 'marker-cluster ';
+            if (cluster.getChildCount() < 10) {
+                className += 'marker-cluster-small';
+            } else if (cluster.getChildCount() < 100) {
+                className += 'marker-cluster-medium';
+            } else {
+                className += 'marker-cluster-large';
+            }
             return L.divIcon({
                 html: '<b>' + cluster.getChildCount() + '</b>',
-                className: 'marker-cluster marker-cluster-large',
-                iconSize: new L.Point(40, 40)
+                className: className,
+                iconSize: new L.Point(30, 30)
             });
         },
         spiderfyOnMaxZoom: false,  // Disable spiderfying on max zoom
@@ -104,19 +135,21 @@ async function fetchDataAndAddToMap(url, markerGroup) {
 
 function createGeoJsonLayer(data) {
     return L.geoJSON(data, {
-        pointToLayer: function (feature, latlng) {
-            return createMarker(feature, latlng);
-        }
+        pointToLayer: createMarker
     });
 }
 
 function createMarker(feature, latlng) {
     let marker = L.marker(latlng);
-    marker.on('click', function(event) {
-        event.originalEvent.stopPropagation();
-        displayPropertiesInSidebar(feature.properties);
-    });
+    marker.on('click', createClickHandler(feature.properties));
     return marker;
+}
+
+function createClickHandler(properties) {
+    return function(event) {
+        event.originalEvent.stopPropagation();
+        displayPropertiesInSidebar(properties);
+    };
 }
 
 function addClusterClickListener(markerGroup) {
