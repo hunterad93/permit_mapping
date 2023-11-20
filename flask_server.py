@@ -4,7 +4,6 @@ import simplejson as json
 import geopandas as gpd
 from rtree import index
 import time
-from flask_caching import Cache
 
 
 app = Flask(__name__)

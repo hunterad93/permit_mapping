@@ -101,17 +101,15 @@ $(document).click(function() {
 });
 
 // Initialize map and markers
-let map = initializeMap('map', [46.8721, -113.9940], 14);
+let map = initializeMap('map', [46.8721, -113.9940], 15);
 let markers = createMarkerClusterGroup();
 
 // Fetch initial data and add to map
-fetchDataAndAddToMap('/data' + getViewportBounds(), markers);
+fetchDataAndAddToMap('/data' + getViewportBounds(), markers, debounce = false);
 
 map.on('moveend', function() {
-    // When the map movement ends, wait a short time and then fetch new data and add to map
-    setTimeout(function() {
-        fetchDataAndAddToMap('/data' + getViewportBounds(), markers);
-    }, 100);  // Wait 100 milliseconds
+    // When the map movement ends, fetch new data and add to map
+    fetchDataAndAddToMap('/data' + getViewportBounds(), markers);
 });
 
 function getViewportBounds() {
@@ -123,16 +121,10 @@ function getViewportBounds() {
     return `?north=${bounds.getNorth()}&south=${bounds.getSouth()}&east=${bounds.getEast()}&west=${bounds.getWest()}&${filters}`;
 }
 
-let debounceTimeoutId;
+let debounceTimeout;
 
-async function fetchDataAndAddToMap(url, markerGroup) {
-    // If there's an existing timeout, clear it
-    if (debounceTimeoutId) {
-        clearTimeout(debounceTimeoutId);
-    }
-
-    // Set a new timeout
-    debounceTimeoutId = setTimeout(async function() {
+async function fetchDataAndAddToMap(url, markerGroup, debounce = true) {
+    const fetchData = async () => {
         // Clear the existing markers
         markerGroup.clearLayers();
 
@@ -141,7 +133,14 @@ async function fetchDataAndAddToMap(url, markerGroup) {
         const geoJsonLayer = createGeoJsonLayer(data);
         markerGroup.addLayer(geoJsonLayer);
         map.addLayer(markerGroup);
-    }, 1000);  // Wait 1 second
+    };
+
+    if (debounce) {
+        clearTimeout(debounceTimeout); // Clear the previous timeout
+        debounceTimeout = setTimeout(fetchData, 1000); // Set a new timeout
+    } else {
+        await fetchData();
+    }
 }
 
 // Add event listeners for cluster clicks
@@ -171,21 +170,10 @@ function createMarkerClusterGroup() {
         showCoverageOnHover: false, //Disable the blue polygons
         removeOutsideVisibleBounds: false,  // Keep all markers in the cluster group
         animate: false,  // Disable animation
-        maxClusterRadius: 120,  // Increase the maximum radius that a cluster will cover (default is 80)
+        maxClusterRadius: 80,  // Increase the maximum radius that a cluster will cover (default is 80)
         chunkedLoading: true,  // Enable chunked loading to improve performance
         chunkInterval: 10  // Control how long each chunk operation can run for (in milliseconds)
         });
-}
-
-async function fetchDataAndAddToMap(url, markerGroup) {
-    // Clear the existing markers
-    markerGroup.clearLayers();
-
-    const response = await fetch(url);
-    const data = await response.json();
-    const geoJsonLayer = createGeoJsonLayer(data);
-    markerGroup.addLayer(geoJsonLayer);
-    map.addLayer(markerGroup);
 }
 
 function createGeoJsonLayer(data) {
