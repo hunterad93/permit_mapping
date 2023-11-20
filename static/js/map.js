@@ -9,14 +9,14 @@ function initializeMap(mapId, coordinates, zoomLevel) {
     bounds = L.latLngBounds(southWest, northEast);
     let map = L.map(mapId, { //prevent crazy zoom out or in
         maxZoom: 19,
-        minZoom: 8,
+        minZoom: 12,
         zoomControl: false
     }).setView(coordinates, zoomLevel);
     map.setMaxBounds(bounds);
     L.tileLayer(TILE_LAYER_URL,{
         bounds:bounds,
         maxZoom: 19,
-        minZoom: 8
+        minZoom: 12
     }).addTo(map);
     return map;
 }
@@ -102,12 +102,47 @@ $(document).click(function() {
 
 // Initialize map and markers
 let map = initializeMap('map', [46.8721, -113.9940], 14);
-
-
 let markers = createMarkerClusterGroup();
 
 // Fetch initial data and add to map
-fetchDataAndAddToMap('/data', markers);
+fetchDataAndAddToMap('/data' + getViewportBounds(), markers);
+
+map.on('moveend', function() {
+    // When the map movement ends, wait a short time and then fetch new data and add to map
+    setTimeout(function() {
+        fetchDataAndAddToMap('/data' + getViewportBounds(), markers);
+    }, 100);  // Wait 100 milliseconds
+});
+
+function getViewportBounds() {
+    // Get the current viewport bounds
+    let bounds = map.getBounds();
+    // Get the current filter parameters
+    let filters = getFilters();
+    // Return the bounds and filters as a query string
+    return `?north=${bounds.getNorth()}&south=${bounds.getSouth()}&east=${bounds.getEast()}&west=${bounds.getWest()}&${filters}`;
+}
+
+let debounceTimeoutId;
+
+async function fetchDataAndAddToMap(url, markerGroup) {
+    // If there's an existing timeout, clear it
+    if (debounceTimeoutId) {
+        clearTimeout(debounceTimeoutId);
+    }
+
+    // Set a new timeout
+    debounceTimeoutId = setTimeout(async function() {
+        // Clear the existing markers
+        markerGroup.clearLayers();
+
+        const response = await fetch(url);
+        const data = await response.json();
+        const geoJsonLayer = createGeoJsonLayer(data);
+        markerGroup.addLayer(geoJsonLayer);
+        map.addLayer(markerGroup);
+    }, 1000);  // Wait 1 second
+}
 
 // Add event listeners for cluster clicks
 addClusterClickListener(markers);
@@ -197,17 +232,18 @@ function getFilters() {
     let endDate = $('#end-date').val();
     let recentData = $('#recent-data').is(':checked') ? 'recent' : 'all';
 
-    return `?type=${selectedType}&search=${searchTerm}&start=${startDate}&end=${endDate}&data=${recentData}`;
+    // Return the filters without the leading '?'
+    return `type=${selectedType}&search=${searchTerm}&start=${startDate}&end=${endDate}&data=${recentData}`;
 }
 
 $('#type-filter').change(function() {
-    fetchDataAndAddToMap(`/data${getFilters()}`, markers);
+    fetchDataAndAddToMap(`/data${getViewportBounds()}`, markers);
 });
 
 $('#search-button, #date-filter-button').click(function() {
-    fetchDataAndAddToMap(`/data${getFilters()}`, markers);
+    fetchDataAndAddToMap(`/data${getViewportBounds()}`, markers);
 });
 
 $('#recent-data').change(function() {
-    fetchDataAndAddToMap(`/data${getFilters()}`, markers);
+    fetchDataAndAddToMap(`/data${getViewportBounds()}`, markers);
 });
