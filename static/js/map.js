@@ -27,28 +27,40 @@ let rightSidebar = {
 
     show: function() {
         this.element.style.width = SIDEBAR_WIDTH;
+        $(this.element).children().css('display', '');
     },
 
     hide: function() {
+        $(this.element).children().css('display', 'none');
         this.element.style.width = '0';
     },
+
     displayProperties: function(propertiesArray) {
-        let rows = '';
-        propertiesArray.forEach(properties => {
-            for (let key in properties) {
-                let value = properties[key];
-                // Check if the key is 'url'
-                if (key === 'url') {
-                    // If it's 'url', create a hyperlink
-                    value = `<a href="${value}" target="_blank">link</a>`;
+        // Show the spinner
+        $('#spinner').css('display', 'block');
+    
+        // Use setTimeout to delay the execution of the long-running operation
+        setTimeout(() => {
+            let rows = '';
+            propertiesArray.forEach(properties => {
+                for (let key in properties) {
+                    let value = properties[key];
+                    // Check if the key is 'url'
+                    if (key === 'url') {
+                        // If it's 'url', create a hyperlink
+                        value = `<a href="${value}" target="_blank">link</a>`;
+                    }
+                    rows += `<tr><td><strong>${key}:</strong></td><td>${value}</td></tr>`;
                 }
-                rows += `<tr><td><strong>${key}:</strong></td><td>${value}</td></tr>`;
-            }
-            rows += '<tr><td colspan="2"><hr></td></tr>'; // Horizontal line to separate different properties
-        });
-        let $table = $(`<table>${rows}</table>`);
-        $(this.element).html(`<strong><p>${propertiesArray.length} permit(s) at this location</p></strong>`).append($table);
-        this.show();
+                rows += '<tr><td colspan="2"><hr></td></tr>'; // Horizontal line to separate different properties
+            });
+            let $table = $(`<table>${rows}</table>`);
+            $(this.element).html(`<strong><p>${propertiesArray.length} permit(s) at this location</p></strong>`).append($table);
+            this.show();
+    
+            // Hide the spinner
+            $('#spinner').css('display', 'none');
+        }, 100); // 0 ms delay
     }
 };
 
