@@ -8,8 +8,11 @@
  - **Property Sidebar**: Displays detailed information about selected properties.
  - **Search and Filter**: Enables users to search for properties by address and filter by type.
 
+ ![Project Interaction Gif](demonstration.png)
+
+
  ## Code Structure
- - **React Map Component**: Main component of the application (static/js/map.js).
+ - **JQuery Map Script**: Interactive leaflet map (static/js/map.js).
  - **CSS Styles**: Styles for the application (static/css/styles.css).
  - **Server-side Code**: Python code for server-side operations (flask_server.py).
 
