@@ -8,7 +8,7 @@
  - **Property Sidebar**: Displays detailed information about selected properties.
  - **Search and Filter**: Enables users to search for properties by address and filter by type.
 
- ![Project Interaction Screenshot]('demonstration.png')
+ ![Project Interaction Screenshot](demonstration.png)
 
 
  ## Code Structure
